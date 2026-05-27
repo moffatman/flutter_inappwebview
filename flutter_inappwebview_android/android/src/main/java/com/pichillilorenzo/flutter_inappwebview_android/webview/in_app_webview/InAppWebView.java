@@ -9,7 +9,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -59,8 +58,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.webkit.CustomHeader;
-import androidx.webkit.Profile;
 import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
@@ -110,7 +107,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -240,26 +236,10 @@ final public class InAppWebView extends InputAwareWebView implements InAppWebVie
     }
   }
 
-  private String getSpoofedHeader() {
-    try {
-      getContext().getPackageManager().getPackageInfo("com.android.chrome", 0);
-      return "com.android.chrome";
-    }
-    catch (PackageManager.NameNotFoundException e) {
-      return "com.android.settings";
-    }
-  }
-
   @SuppressLint("RestrictedApi")
   public void prepare() {
     if (plugin != null) {
       webViewAssetLoaderExt = WebViewAssetLoaderExt.fromMap(customSettings.webViewAssetLoader, plugin, getContext());
-    }
-
-    if (WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROFILE) && WebViewFeature.isFeatureSupported(WebViewFeature.CUSTOM_REQUEST_HEADERS)) {
-      WebViewCompat.setProfile(this, "custom");
-      Profile profile = WebViewCompat.getProfile(this);
-      profile.addCustomHeader(new CustomHeader("x-requested-with", getSpoofedHeader(), Set.of("*")));
     }
 
     javaScriptBridgeInterface = new JavaScriptBridgeInterface(this);
